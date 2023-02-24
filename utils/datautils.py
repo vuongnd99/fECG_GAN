@@ -9,24 +9,42 @@ import padasip as pa
 class DataUtils:
 
     def __init__(self) -> None:
-        self.fileNames = ["r01.edf", "r04.edf", "r07.edf", "r08.edf", "r10.edf"]
+        self.dataset = ["adbecg/", "nifecg/", "synt_ecg/"]
+        self.record = '/RECORDS' # each dataset has a RECORDs file which contains file names
+    """
+    Read data from edf files. 3 Datasets contains:
+    - Abdominal and Direct ECG: 5 signal files, each file contains:
+        - referenced fetal signals
+        - 4 channels of abdominal signals
 
-    def readData(self, sigNum, path):
-        file_name = path + self.fileNames[sigNum]
-        f = pyedflib.EdfReader(file_name)
-        n = f.signals_in_file
+    - Non-Invasive Fetal ECG: each recording contains:
+        - 2 thoracic signals
+        - 3 or 4 abdominal signals
 
-        adbECG = np.zeros((n-1, f.getNSamples()[0]))
-        fetalECG = np.zeros((1, f.getNSamples()[0]))
-        fetalECG[0, :] = f.readSignal(0)
-        fetalECG[0, :] = scale(self.butter_bandpass_filter(fetalECG, 1, 100, 1000), axis=1)
-        for i in np.arange(1, n):
-            adbECG[i - 1, :] = f.readSignal(i)
-
-        adbECG = scale(self.butter_bandpass_filter(adbECG, 1, 100, 1000), axis=1)
-        adbECG = signal.resample(adbECG, int(adbECG.shape[1] / 5), axis=1)
-        fetalECG = signal.resample(fetalECG, int(fetalECG.shape[1] / 5), axis=1)
-        return adbECG, fetalECG
+    - Synthesized dataset: to be updated
+    """
+    def readData(self, dataset, path='data/'):
+        dataset_path = path + dataset
+        # if dataset == 'adbecg':
+        fileNames = dataset_path + self.record 
+        with open(fileNames, 'rb') as f:
+            files = f.readlines()
+        for file in files:
+            signal_path = dataset_path + file[:-1]
+            f = pyedflib.EdfReader(file_name)
+            n = f.signals_in_file
+    
+            adbECG = np.zeros((n-1, f.getNSamples()[0]))
+            fetalECG = np.zeros((1, f.getNSamples()[0]))
+            fetalECG[0, :] = f.readSignal(0)
+            fetalECG[0, :] = scale(self.butter_bandpass_filter(fetalECG, 1, 100, 1000), axis=1)
+            for i in np.arange(1, n):
+                adbECG[i - 1, :] = f.readSignal(i)
+    
+            adbECG = scale(self.butter_bandpass_filter(adbECG, 1, 100, 1000), axis=1)
+            adbECG = signal.resample(adbECG, int(adbECG.shape[1] / 5), axis=1)
+            fetalECG = signal.resample(fetalECG, int(fetalECG.shape[1] / 5), axis=1)
+            return adbECG, fetalECG
             
     def windowingSig(self, sig1, sig2, windowSize = 15):
         signalLen = sig2.shape[1]
