@@ -28,7 +28,9 @@ In this repository, we present a method for fetal ECG extraction on the time-fre
 
 Download or clone the repository:
 
-`git clone [https link to my repository]`
+```
+git clone [https link to my repository]
+```python
 
 ## License
 
