@@ -12,10 +12,10 @@ In this repository, we present a method for fetal ECG extraction on the time-fre
 
 ## 3. Repository Contents
 
-`data/`: contains sample maternal and fetal ECG signals
-`models/`: contains the checkpoints
-`src/`: contains scripts for training and testing the GAN model
-`README.md`: this file
+- `data/`: contains sample maternal and fetal ECG signals
+- `models/`: contains the checkpoints
+- `src/`: contains scripts for training and testing the GAN model
+- `README.md`: this file
 
 ### 3.1. Requirements
 
